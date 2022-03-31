@@ -36,6 +36,9 @@ from authentik.policies.models import PolicyBindingModel
 LOGGER = get_logger()
 USER_ATTRIBUTE_DEBUG = "goauthentik.io/user/debug"
 USER_ATTRIBUTE_SA = "goauthentik.io/user/service-account"
+USER_ATTRIBUTE_GENERATED = "goauthentik.io/user/generated"
+USER_ATTRIBUTE_EXPIRES = "goauthentik.io/user/expires"
+USER_ATTRIBUTE_DELETE_ON_LOGOUT = "goauthentik.io/user/delete-on-logout"
 USER_ATTRIBUTE_SOURCES = "goauthentik.io/user/sources"
 USER_ATTRIBUTE_TOKEN_EXPIRING = "goauthentik.io/user/token-expires"  # nosec
 USER_ATTRIBUTE_CHANGE_USERNAME = "goauthentik.io/user/can-change-username"
@@ -80,6 +83,13 @@ class Group(models.Model):
         related_name="children",
     )
     attributes = models.JSONField(default=dict, blank=True)
+
+    @property
+    def num_pk(self) -> int:
+        """Get a numerical, int32 ID for the group"""
+        # int max is 2147483647 (10 digits) so 9 is the max usable
+        # in the LDAP Outpost we use the last 5 chars so match here
+        return int(str(self.pk.int)[:5])
 
     def is_member(self, user: "User") -> bool:
         """Recursively check if `user` is member of us, or any parent."""
@@ -156,11 +166,11 @@ class User(GuardianUserMixin, AbstractUser):
         """superuser == staff user"""
         return self.is_superuser  # type: ignore
 
-    def set_password(self, password, signal=True):
+    def set_password(self, raw_password, signal=True):
         if self.pk and signal:
-            password_changed.send(sender=self, user=self, password=password)
+            password_changed.send(sender=self, user=self, password=raw_password)
         self.password_change_date = now()
-        return super().set_password(password)
+        return super().set_password(raw_password)
 
     def check_password(self, raw_password: str) -> bool:
         """

@@ -65,9 +65,10 @@ export class InvitationListPage extends TablePage<Invitation> {
 
     columns(): TableColumn[] {
         return [
-            new TableColumn(t`ID`, "pk"),
+            new TableColumn(t`Name`, "name"),
             new TableColumn(t`Created by`, "created_by"),
             new TableColumn(t`Expiry`),
+            new TableColumn(t`Actions`),
         ];
     }
 
@@ -95,9 +96,17 @@ export class InvitationListPage extends TablePage<Invitation> {
 
     row(item: Invitation): TemplateResult[] {
         return [
-            html`${item.pk}`,
+            html`${item.name}`,
             html`${item.createdBy?.username}`,
             html`${item.expires?.toLocaleString() || t`-`}`,
+            html` <ak-forms-modal>
+                <span slot="submit"> ${t`Update`} </span>
+                <span slot="header"> ${t`Update Invitation`} </span>
+                <ak-invitation-form slot="form" .instancePk=${item.pk}> </ak-invitation-form>
+                <button slot="trigger" class="pf-c-button pf-m-plain">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </ak-forms-modal>`,
         ];
     }
 

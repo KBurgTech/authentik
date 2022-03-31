@@ -8,7 +8,7 @@ from django.http import HttpRequest, HttpResponse
 from django.http.request import QueryDict
 from django.utils.translation import gettext_lazy as _
 from guardian.shortcuts import get_anonymous_user
-from rest_framework.fields import BooleanField, CharField, ChoiceField, IntegerField
+from rest_framework.fields import BooleanField, CharField, ChoiceField, IntegerField, empty
 from rest_framework.serializers import ValidationError
 from structlog.stdlib import get_logger
 
@@ -55,6 +55,7 @@ class PromptChallengeResponse(ChallengeResponse):
         stage: PromptStage = kwargs.pop("stage", None)
         plan: FlowPlan = kwargs.pop("plan", None)
         request: HttpRequest = kwargs.pop("request", None)
+        user: User = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         self.stage = stage
         self.plan = plan
@@ -65,7 +66,9 @@ class PromptChallengeResponse(ChallengeResponse):
         fields = list(self.stage.fields.all())
         for field in fields:
             field: Prompt
-            current = plan.context.get(PLAN_CONTEXT_PROMPT, {}).get(field.field_key)
+            current = field.get_placeholder(
+                plan.context.get(PLAN_CONTEXT_PROMPT, {}), user, self.request
+            )
             self.fields[field.field_key] = field.field(current)
             # Special handling for fields with username type
             # these check for existing users with the same username
@@ -101,7 +104,11 @@ class PromptChallengeResponse(ChallengeResponse):
         )
         for static_hidden in static_hidden_fields:
             field = self.fields[static_hidden.field_key]
-            attrs[static_hidden.field_key] = field.default
+            default = field.default
+            # Prevent rest_framework.fields.empty from ending up in policies and events
+            if default == empty:
+                default = ""
+            attrs[static_hidden.field_key] = default
 
         # Check if we have two password fields, and make sure they are the same
         password_fields: QuerySet[Prompt] = self.stage.fields.filter(type=FieldTypes.PASSWORD)
@@ -112,7 +119,6 @@ class PromptChallengeResponse(ChallengeResponse):
         engine = ListPolicyEngine(self.stage.validation_policies.all(), user, self.request)
         engine.mode = PolicyEngineMode.MODE_ALL
         engine.request.context[PLAN_CONTEXT_PROMPT] = attrs
-        engine.request.context.update(attrs)
         engine.build()
         result = engine.result
         if not result.passing:
@@ -191,6 +197,7 @@ class PromptStageView(ChallengeStageView):
             request=self.request,
             stage=self.executor.current_stage,
             plan=self.executor.plan,
+            user=self.get_pending_user(),
         )
 
     def challenge_valid(self, response: ChallengeResponse) -> HttpResponse:

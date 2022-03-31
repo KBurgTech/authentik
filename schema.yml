@@ -16924,6 +16924,10 @@ paths:
         schema:
           type: string
           format: date-time
+      - in: query
+        name: name
+        schema:
+          type: string
       - name: ordering
         required: false
         in: query
@@ -16973,6 +16977,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InvitationRequest'
+        required: true
       security:
       - authentik: []
       responses:
@@ -17031,6 +17036,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/InvitationRequest'
+        required: true
       security:
       - authentik: []
       responses:
@@ -19231,9 +19237,11 @@ components:
           readOnly: true
         user_agent:
           type: object
+          description: User agent details
           properties:
             device:
               type: object
+              description: User agent device
               properties:
                 brand:
                   type: string
@@ -19241,8 +19249,13 @@ components:
                   type: string
                 model:
                   type: string
+              required:
+              - brand
+              - family
+              - model
             os:
               type: object
+              description: User agent os
               properties:
                 family:
                   type: string
@@ -19254,8 +19267,15 @@ components:
                   type: string
                 patch_minor:
                   type: string
+              required:
+              - family
+              - major
+              - minor
+              - patch
+              - patch_minor
             user_agent:
               type: object
+              description: User agent browser
               properties:
                 family:
                   type: string
@@ -19265,11 +19285,22 @@ components:
                   type: string
                 patch:
                   type: string
+              required:
+              - family
+              - major
+              - minor
+              - patch
             string:
               type: string
+          required:
+          - device
+          - os
+          - string
+          - user_agent
           readOnly: true
         geo_ip:
           type: object
+          description: GeoIP Details
           properties:
             continent:
               type: string
@@ -19283,6 +19314,12 @@ components:
               format: float
             city:
               type: string
+          required:
+          - city
+          - continent
+          - country
+          - lat
+          - long
           nullable: true
           readOnly: true
         user:
@@ -21033,7 +21070,7 @@ components:
           readOnly: true
         traces_sample_rate:
           type: number
-          format: float
+          format: double
           readOnly: true
       required:
       - enabled
@@ -21642,6 +21679,9 @@ components:
           format: uuid
           readOnly: true
           title: Group uuid
+        num_pk:
+          type: integer
+          readOnly: true
         name:
           type: string
           maxLength: 80
@@ -21669,6 +21709,7 @@ components:
           readOnly: true
       required:
       - name
+      - num_pk
       - parent
       - parent_name
       - pk
@@ -22070,6 +22111,10 @@ components:
           format: uuid
           readOnly: true
           title: Invite uuid
+        name:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
         expires:
           type: string
           format: date-time
@@ -22085,11 +22130,17 @@ components:
           description: When enabled, the invitation will be deleted after usage.
       required:
       - created_by
+      - name
       - pk
     InvitationRequest:
       type: object
       description: Invitation Serializer
       properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
         expires:
           type: string
           format: date-time
@@ -22099,6 +22150,8 @@ components:
         single_use:
           type: boolean
           description: When enabled, the invitation will be deleted after usage.
+      required:
+      - name
     InvitationStage:
       type: object
       description: InvitationStage Serializer
@@ -23038,7 +23091,6 @@ components:
           type: string
           format: uuid
           nullable: true
-          title: RSA Key
           description: Key used to sign the tokens. Only required when JWT Algorithm
             is set to RS256.
         redirect_uris:
@@ -23053,6 +23105,15 @@ components:
           allOf:
           - $ref: '#/components/schemas/IssuerModeEnum'
           description: Configure how the issuer field of the ID Token should be filled.
+        verification_keys:
+          type: array
+          items:
+            type: string
+            format: uuid
+            title: Allowed certificates for JWT-based client_credentials
+          title: Allowed certificates for JWT-based client_credentials
+          description: JWTs created with the configured certificates can authenticate
+            with this provider.
       required:
       - assigned_application_name
       - assigned_application_slug
@@ -23063,6 +23124,7 @@ components:
       - pk
       - verbose_name
       - verbose_name_plural
+      - verification_keys
     OAuth2ProviderRequest:
       type: object
       description: OAuth2Provider Serializer
@@ -23110,7 +23172,6 @@ components:
           type: string
           format: uuid
           nullable: true
-          title: RSA Key
           description: Key used to sign the tokens. Only required when JWT Algorithm
             is set to RS256.
         redirect_uris:
@@ -23125,9 +23186,19 @@ components:
           allOf:
           - $ref: '#/components/schemas/IssuerModeEnum'
           description: Configure how the issuer field of the ID Token should be filled.
+        verification_keys:
+          type: array
+          items:
+            type: string
+            format: uuid
+            title: Allowed certificates for JWT-based client_credentials
+          title: Allowed certificates for JWT-based client_credentials
+          description: JWTs created with the configured certificates can authenticate
+            with this provider.
       required:
       - authorization_flow
       - name
+      - verification_keys
     OAuth2ProviderSetupURLs:
       type: object
       description: OAuth2 Provider Metadata serializer
@@ -27106,6 +27177,11 @@ components:
       type: object
       description: Invitation Serializer
       properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
         expires:
           type: string
           format: date-time
@@ -27430,7 +27506,6 @@ components:
           type: string
           format: uuid
           nullable: true
-          title: RSA Key
           description: Key used to sign the tokens. Only required when JWT Algorithm
             is set to RS256.
         redirect_uris:
@@ -27445,6 +27520,15 @@ components:
           allOf:
           - $ref: '#/components/schemas/IssuerModeEnum'
           description: Configure how the issuer field of the ID Token should be filled.
+        verification_keys:
+          type: array
+          items:
+            type: string
+            format: uuid
+            title: Allowed certificates for JWT-based client_credentials
+          title: Allowed certificates for JWT-based client_credentials
+          description: JWTs created with the configured certificates can authenticate
+            with this provider.
     PatchedOAuthSourceRequest:
       type: object
       description: OAuth Source Serializer
@@ -30444,6 +30528,7 @@ components:
           readOnly: true
         runtime:
           type: object
+          description: Runtime information
           properties:
             python_version:
               type: string
@@ -30457,6 +30542,13 @@ components:
               type: string
             uname:
               type: string
+          required:
+          - architecture
+          - environment
+          - gunicorn_version
+          - platform
+          - python_version
+          - uname
           readOnly: true
         tenant:
           type: string

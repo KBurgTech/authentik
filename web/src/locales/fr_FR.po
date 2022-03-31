@@ -183,6 +183,7 @@ msgstr "Action"
 #: src/pages/property-mappings/PropertyMappingListPage.ts
 #: src/pages/providers/ProviderListPage.ts
 #: src/pages/stages/StageListPage.ts
+#: src/pages/stages/invitation/InvitationListPage.ts
 #: src/pages/stages/prompt/PromptListPage.ts
 #: src/pages/system-tasks/SystemTaskListPage.ts
 #: src/pages/tenants/TenantListPage.ts
@@ -2343,6 +2344,7 @@ msgstr "Cacher les comptes de service"
 #: src/pages/events/RuleForm.ts
 #: src/pages/outposts/OutpostForm.ts
 #: src/pages/providers/oauth2/OAuth2ProviderForm.ts
+#: src/pages/providers/oauth2/OAuth2ProviderForm.ts
 #: src/pages/providers/proxy/ProxyProviderForm.ts
 #: src/pages/providers/saml/SAMLProviderForm.ts
 #: src/pages/sources/ldap/LDAPSourceForm.ts
@@ -2366,7 +2368,6 @@ msgid "How to connect"
 msgstr ""
 
 #: src/elements/forms/DeleteBulkForm.ts
-#: src/pages/stages/invitation/InvitationListPage.ts
 #: src/pages/users/RelatedUserList.ts
 #: src/pages/users/UserListPage.ts
 msgid "ID"
@@ -2606,6 +2607,10 @@ msgstr "Mode de l'émetteur"
 #~ msgstr "Algorithme JWT"
 
 #: src/pages/providers/oauth2/OAuth2ProviderForm.ts
+msgid "JWTs signed by certificates configured here can be used to authenticate to the provider."
+msgstr ""
+
+#: src/pages/providers/oauth2/OAuth2ProviderForm.ts
 msgid "Key used to sign the tokens."
 msgstr ""
 
@@ -2737,6 +2742,7 @@ msgstr "Charger les serveurs"
 #: src/pages/applications/ApplicationViewPage.ts
 #: src/pages/applications/ApplicationViewPage.ts
 #: src/user/user-settings/details/UserSettingsFlowExecutor.ts
+#: src/user/user-settings/details/stages/prompt/PromptStage.ts
 #: src/user/user-settings/mfa/MFADevicesPage.ts
 #: src/user/user-settings/sources/SourceSettings.ts
 #: src/utils.ts
@@ -2765,6 +2771,7 @@ msgstr "Chargement en cours"
 #: src/pages/providers/ldap/LDAPProviderForm.ts
 #: src/pages/providers/ldap/LDAPProviderForm.ts
 #: src/pages/providers/ldap/LDAPProviderForm.ts
+#: src/pages/providers/oauth2/OAuth2ProviderForm.ts
 #: src/pages/providers/oauth2/OAuth2ProviderForm.ts
 #: src/pages/providers/oauth2/OAuth2ProviderForm.ts
 #: src/pages/providers/oauth2/OAuth2ProviderForm.ts
@@ -3070,6 +3077,8 @@ msgstr "Mes applications"
 #: src/pages/stages/dummy/DummyStageForm.ts
 #: src/pages/stages/email/EmailStageForm.ts
 #: src/pages/stages/identification/IdentificationStageForm.ts
+#: src/pages/stages/invitation/InvitationForm.ts
+#: src/pages/stages/invitation/InvitationListPage.ts
 #: src/pages/stages/invitation/InvitationStageForm.ts
 #: src/pages/stages/password/PasswordStageForm.ts
 #: src/pages/stages/prompt/PromptStageForm.ts
@@ -5538,6 +5547,7 @@ msgstr "À jour !"
 #: src/pages/sources/plex/PlexSourceViewPage.ts
 #: src/pages/sources/saml/SAMLSourceViewPage.ts
 #: src/pages/stages/StageListPage.ts
+#: src/pages/stages/invitation/InvitationListPage.ts
 #: src/pages/stages/prompt/PromptListPage.ts
 #: src/pages/tenants/TenantListPage.ts
 #: src/pages/tokens/TokenListPage.ts
@@ -5578,6 +5588,10 @@ msgstr "Mettre à jour le flux"
 #: src/pages/policies/BoundPoliciesList.ts
 msgid "Update Group"
 msgstr "Mettre à jour le groupe"
+
+#: src/pages/stages/invitation/InvitationListPage.ts
+msgid "Update Invitation"
+msgstr ""
 
 #: src/pages/providers/ldap/LDAPProviderViewPage.ts
 msgid "Update LDAP Provider"
@@ -5952,6 +5966,10 @@ msgstr "Vérification"
 #: src/pages/providers/saml/SAMLProviderForm.ts
 msgid "Verification Certificate"
 msgstr "Certificat de validation"
+
+#: src/pages/providers/oauth2/OAuth2ProviderForm.ts
+msgid "Verification certificates"
+msgstr ""
 
 #: src/pages/stages/email/EmailStageForm.ts
 msgid "Verify the user's email address by sending them a one-time-link. Can also be used for recovery to verify the user's authenticity."

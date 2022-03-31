@@ -93,6 +93,11 @@ def sanitize_dict(source: dict[Any, Any]) -> dict[Any, Any]:
             final_dict[key] = value.hex
         elif isinstance(value, (HttpRequest, WSGIRequest)):
             continue
+        elif isinstance(value, type):
+            final_dict[key] = {
+                "type": value.__name__,
+                "module": value.__module__,
+            }
         else:
             final_dict[key] = value
     return final_dict
